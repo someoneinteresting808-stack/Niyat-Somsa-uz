@@ -1,0 +1,19 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+# Temporary files & logs
+*.zip
+*.rar
+temp-extracted-*/
+temp-extracted-somsa-uz/
+scratch_extractor*
+scratch_req_*
+search_results.txt
+accept_invitations.cjs
+download_zip.cjs
