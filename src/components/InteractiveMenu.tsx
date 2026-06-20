@@ -35,7 +35,8 @@ export default function InteractiveMenu() {
         ...doc.data()
       })) as MenuItem[];
       
-      const validItems = items.filter(item => item.image);
+      // Only include items selected for Lazzat Xaritasi (isSpecial), max 8 items
+      const validItems = items.filter(item => item.image && (item as any).isSpecial).slice(0, 8);
       setMenuItems(validItems);
     });
     return () => unsubscribe();

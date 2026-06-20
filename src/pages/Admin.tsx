@@ -458,9 +458,17 @@ const Admin: React.FC = () => {
     setTogglingId(itemId + flag);
     try {
       if (flag === 'isSpecial' && value) {
-        const toReset = menuItems.filter(i => i.id !== itemId && (i as any).isSpecial);
-        for (const item of toReset) {
-          await updateDoc(doc(db, 'menu', item.id), { isSpecial: false });
+        const specialCount = menuItems.filter(i => (i as any).isSpecial).length;
+        if (specialCount >= 8) {
+          alert("Lazzat Xaritasi (Featured items) can have a maximum of 8 items!");
+          return;
+        }
+      }
+      if (flag === 'isPopular' && value) {
+        const popularCount = menuItems.filter(i => (i as any).isPopular).length;
+        if (popularCount >= 3) {
+          alert("Mashhur tanlovlar can have a maximum of 3 items!");
+          return;
         }
       }
       await updateDoc(doc(db, 'menu', itemId), { [flag]: value });
@@ -667,42 +675,90 @@ const Admin: React.FC = () => {
           </div>
 
           {/* Content Area */}
-          <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className={`${activeTab === 'menu' ? '' : 'bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden'}`}>
             {activeTab === 'menu' && (
-              <div className="divide-y divide-gray-50">
-                {menuItems.length === 0 ? (
-                  <div className="p-12 text-center text-gray-400 italic">No menu items found.</div>
-                ) : (
-                  menuItems.map((item) => (
-                    <div key={item.id} className="p-6 flex items-center space-x-6 group hover:bg-gray-50 transition-colors">
-                      <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0">
-                        <img src={item.image || undefined} alt={item.name} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-grow space-y-1">
-                        <h4 className="text-lg font-bold text-primary">{item.name}</h4>
-                        <div className="flex items-center space-x-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                          <span>{item.category}</span>
-                          <span>•</span>
-                          <span className="text-accent">{item.price}</span>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Menu Items List */}
+                <div className="lg:col-span-2 bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden divide-y divide-gray-50">
+                  <div className="p-6 bg-gray-50/60 border-b border-gray-100">
+                    <span className="text-sm font-bold text-gray-500">Menu Items ({menuItems.length})</span>
+                  </div>
+                  {menuItems.length === 0 ? (
+                    <div className="p-12 text-center text-gray-400 italic">No menu items found.</div>
+                  ) : (
+                    <div className="divide-y divide-gray-50">
+                      {menuItems.map((item) => (
+                        <div key={item.id} className="p-6 flex items-center space-x-6 group hover:bg-gray-50 transition-colors">
+                          <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0">
+                            <img src={item.image || undefined} alt={item.name} className="w-full h-full object-cover" />
+                          </div>
+                          <div className="flex-grow space-y-1">
+                            <h4 className="text-lg font-bold text-primary">{item.name}</h4>
+                            <div className="flex items-center space-x-4 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                              <span>{item.category}</span>
+                              <span>•</span>
+                              <span className="text-accent">{item.price}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button
+                              onClick={() => setEditingItem(item)}
+                              className="p-2 text-gray-400 hover:text-primary transition-colors"
+                            >
+                              <Edit2 size={18} />
+                            </button>
+                            <button
+                              onClick={() => setConfirmDelete({ id: item.id, type: 'menu' })}
+                              className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Categories Management List */}
+                <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col h-fit">
+                  <div className="p-6 bg-gray-50/60 border-b border-gray-100 flex justify-between items-center">
+                    <span className="text-sm font-bold text-gray-500">Categories ({categoriesList.length})</span>
+                    <button
+                      onClick={handleAddCategory}
+                      className="px-3 py-1.5 bg-accent text-white rounded-xl font-bold flex items-center space-x-1 hover:shadow-md transition-all text-xs"
+                    >
+                      <Plus size={12} />
+                      <span>Add</span>
+                    </button>
+                  </div>
+                  <div className="divide-y divide-gray-50 max-h-[500px] overflow-y-auto">
+                    {categoriesList.map((cat) => (
+                      <div key={cat.id} className="p-4 flex items-center justify-between group hover:bg-gray-50 transition-colors">
+                        <div className="space-y-0.5">
+                          <p className="text-sm font-bold text-primary">{cat.nameUz}</p>
+                          <p className="text-[10px] text-gray-400 font-semibold">{cat.nameEn} · {cat.nameRu}</p>
+                        </div>
+                        <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => handleEditCategory(cat.id)}
+                            className="p-1.5 text-gray-400 hover:text-accent transition-colors"
+                            title="Edit Category"
+                          >
+                            <Edit2 size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCategory(cat.id)}
+                            className="p-1.5 text-gray-400 hover:text-red-500 transition-colors"
+                            title="Delete Category"
+                          >
+                            <Trash2 size={14} />
+                          </button>
                         </div>
                       </div>
-                      <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={() => setEditingItem(item)}
-                          className="p-2 text-gray-400 hover:text-primary transition-colors"
-                        >
-                          <Edit2 size={18} />
-                        </button>
-                        <button
-                          onClick={() => setConfirmDelete({ id: item.id, type: 'menu' })}
-                          className="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
 
@@ -816,7 +872,7 @@ const Admin: React.FC = () => {
                     <div className="w-4 h-4 rounded bg-amber-400/80 flex items-center justify-center">
                       <Star size={10} className="text-white fill-white" />
                     </div>
-                    Bugungi maxsus <span className="text-gray-400 font-normal">(max 1)</span>
+                    Lazzat Xaritasi <span className="text-gray-400 font-normal">(max 8)</span>
                   </div>
                   <div className="flex items-center gap-2 text-xs font-bold text-gray-500">
                     <div className="w-4 h-4 rounded bg-primary flex items-center justify-center">
@@ -831,6 +887,7 @@ const Admin: React.FC = () => {
                   menuItems.map((item: any) => {
                     const isSpecial = !!item.isSpecial;
                     const isPopular = !!item.isPopular;
+                    const specialCount = menuItems.filter((i: any) => i.isSpecial).length;
                     const popularCount = menuItems.filter((i: any) => i.isPopular).length;
                     const togglingSpecial = togglingId === item.id + 'isSpecial';
                     const togglingPopular = togglingId === item.id + 'isPopular';
@@ -844,11 +901,12 @@ const Admin: React.FC = () => {
                           <p className="text-xs text-gray-400 uppercase tracking-widest">{item.category} · {item.price}</p>
                         </div>
                         <div className="flex flex-col items-center gap-1">
-                          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Maxsus</span>
+                          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Lazzat Xaritasi</span>
                           <button
-                            disabled={togglingSpecial}
+                            disabled={togglingSpecial || (!isSpecial && specialCount >= 8)}
                             onClick={() => handleToggleFlag(item.id, 'isSpecial', !isSpecial)}
-                            className={`relative w-11 h-6 rounded-full transition-all duration-300 ${isSpecial ? 'bg-amber-400' : 'bg-gray-200'} ${togglingSpecial ? 'opacity-50' : ''}`}
+                            title={!isSpecial && specialCount >= 8 ? 'Max 8 ta mahsulot tanlash mumkin' : ''}
+                            className={`relative w-11 h-6 rounded-full transition-all duration-300 ${isSpecial ? 'bg-amber-400' : 'bg-gray-200'} ${(togglingSpecial || (!isSpecial && specialCount >= 8)) ? 'opacity-40 cursor-not-allowed' : ''}`}
                           >
                             <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 ${isSpecial ? 'translate-x-5' : ''}`} />
                           </button>
