@@ -32,7 +32,12 @@ const Admin: React.FC = () => {
   const [isAdding, setIsAdding] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [categoriesList, setCategoriesList] = useState<{ id: string, nameUz: string, nameEn: string, nameRu: string }[]>([]);
+  const [categoriesList, setCategoriesList] = useState<{ id: string, nameUz: string, nameEn: string, nameRu: string }[]>([
+    { id: 'beef', nameUz: 'Goʻshtli', nameEn: 'Beef', nameRu: 'С говядиной' },
+    { id: 'chicken', nameUz: 'Tovuqli', nameEn: 'Chicken', nameRu: 'С курицей' },
+    { id: 'pumpkin', nameUz: 'Oshqovoqli', nameEn: 'Pumpkin', nameRu: 'С тыквой' },
+    { id: 'greens', nameUz: 'Koʻkatli', nameEn: 'Greens', nameRu: 'С зеленью' }
+  ]);
   const [messages, setMessages] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [branches, setBranches] = useState<any[]>([]);
@@ -294,6 +299,13 @@ const Admin: React.FC = () => {
 
     try {
       await setDoc(doc(db, 'categories', id), { nameUz, nameEn, nameRu });
+      
+      // Auto-select the newly added category for the active item being added or edited
+      if (isAdding) {
+        setNewItem(prev => ({ ...prev, category: id }));
+      } else if (editingItem) {
+        setEditingItem(prev => prev ? { ...prev, category: id } : null);
+      }
     } catch (error) {
       alert("Failed to add category");
     }
