@@ -867,18 +867,12 @@ const Admin: React.FC = () => {
 
             {activeTab === 'featured' && (
               <div className="divide-y divide-gray-50">
-                <div className="p-6 flex items-center gap-8 bg-gray-50/60">
+                <div className="p-6 flex items-center bg-gray-50/60">
                   <div className="flex items-center gap-2 text-xs font-bold text-gray-500">
                     <div className="w-4 h-4 rounded bg-amber-400/80 flex items-center justify-center">
                       <Star size={10} className="text-white fill-white" />
                     </div>
                     Lazzat Xaritasi <span className="text-gray-400 font-normal">(max 8)</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-bold text-gray-500">
-                    <div className="w-4 h-4 rounded bg-primary flex items-center justify-center">
-                      <Star size={10} className="text-white fill-white" />
-                    </div>
-                    Mashhur tanlovlar <span className="text-gray-400 font-normal">(max 3)</span>
                   </div>
                 </div>
                 {menuItems.length === 0 ? (
@@ -886,11 +880,8 @@ const Admin: React.FC = () => {
                 ) : (
                   menuItems.map((item: any) => {
                     const isSpecial = !!item.isSpecial;
-                    const isPopular = !!item.isPopular;
                     const specialCount = menuItems.filter((i: any) => i.isSpecial).length;
-                    const popularCount = menuItems.filter((i: any) => i.isPopular).length;
                     const togglingSpecial = togglingId === item.id + 'isSpecial';
-                    const togglingPopular = togglingId === item.id + 'isPopular';
                     return (
                       <div key={item.id} className="p-5 flex items-center gap-5 hover:bg-gray-50/60 transition-colors">
                         <div className="w-16 h-16 rounded-2xl overflow-hidden flex-shrink-0">
@@ -909,17 +900,6 @@ const Admin: React.FC = () => {
                             className={`relative w-11 h-6 rounded-full transition-all duration-300 ${isSpecial ? 'bg-amber-400' : 'bg-gray-200'} ${(togglingSpecial || (!isSpecial && specialCount >= 8)) ? 'opacity-40 cursor-not-allowed' : ''}`}
                           >
                             <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 ${isSpecial ? 'translate-x-5' : ''}`} />
-                          </button>
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Mashhur</span>
-                          <button
-                            disabled={togglingPopular || (!isPopular && popularCount >= 3)}
-                            onClick={() => handleToggleFlag(item.id, 'isPopular', !isPopular)}
-                            title={!isPopular && popularCount >= 3 ? 'Max 3 ta mashhur tanlash mumkin' : ''}
-                            className={`relative w-11 h-6 rounded-full transition-all duration-300 ${isPopular ? 'bg-primary' : 'bg-gray-200'} ${(togglingPopular || (!isPopular && popularCount >= 3)) ? 'opacity-40 cursor-not-allowed' : ''}`}
-                          >
-                            <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform duration-300 ${isPopular ? 'translate-x-5' : ''}`} />
                           </button>
                         </div>
                       </div>
