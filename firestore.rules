@@ -83,7 +83,7 @@ service cloud.firestore {
     function isValidMenuItem(data) {
       return data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
         data.price is string && data.price.size() > 0 && data.price.size() <= 50 &&
-        data.category in ['beef', 'chicken', 'pumpkin', 'greens'] &&
+        data.category is string && data.category.size() > 0 && data.category.size() <= 50 &&
         (!('description' in data) || (data.description is string && data.description.size() <= 500)) &&
         isValidUrl(data.image) &&
         (!('rating' in data) || (data.rating is number && data.rating >= 0 && data.rating <= 5)) &&
@@ -120,6 +120,21 @@ service cloud.firestore {
     match /menu/{itemId} {
       allow read: if true;
       allow create, update, delete: if isAdmin();
+    }
+
+    match /categories/{catId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /branches/{branchId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /orders/{orderId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
     }
 
     match /gallery/{imageId} {
