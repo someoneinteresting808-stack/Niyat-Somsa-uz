@@ -75,7 +75,7 @@ export default function InteractiveMenu() {
       const absDiff = Math.abs(diff);
 
       // Rotate, translate and shift cards 3D coverflow-style using scale to avoid browser hit-testing issues
-      let translateX = diff * 210; 
+      let translateX = diff * 230; 
       let scale = 1 - absDiff * 0.15; 
       let rotateY = diff * -25; 
       let opacity = 1 - absDiff * 0.35; 
@@ -83,12 +83,12 @@ export default function InteractiveMenu() {
 
       // Responsive adjustments for tablet / mobile viewports
       if (window.innerWidth < 640) {
-        translateX = diff * 90;
+        translateX = diff * 110;
         scale = 1 - absDiff * 0.18;
         rotateY = diff * -20;
         opacity = 1 - absDiff * 0.45;
       } else if (window.innerWidth < 1024) {
-        translateX = diff * 160;
+        translateX = diff * 180;
         scale = 1 - absDiff * 0.15;
         rotateY = diff * -25;
       }
@@ -144,7 +144,7 @@ export default function InteractiveMenu() {
   cardsRef.current = cardsRef.current.slice(0, displayItems.length);
 
   return (
-    <section id="menu-interactive" className="bg-[#FAF8F5] py-16 sm:py-24 border-t border-brand-charcoal/5 relative overflow-hidden">
+    <section id="menu-interactive" className="bg-menu-section py-10 sm:py-14 border-t border-brand-charcoal/5 relative z-10 overflow-hidden">
       
       {/* Dynamic 3D Transform perspective style wrapper */}
       <style>{`
@@ -164,7 +164,7 @@ export default function InteractiveMenu() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 w-full flex flex-col items-center">
         
         {/* Header Text block */}
-        <div className="text-center space-y-2 mb-12 max-w-xl">
+        <div className="text-center space-y-2 mb-6 max-w-xl">
           <h2 className="font-sans text-3xl sm:text-5xl font-black text-brand-charcoal tracking-tighter uppercase leading-none">
             {textT.menuTitle}
           </h2>
@@ -176,7 +176,7 @@ export default function InteractiveMenu() {
         {/* 3D Coverflow stage area - expanded width to fit spacing properly */}
         <div 
           ref={stageRef} 
-          className="perspective-stage relative w-full max-w-xl sm:max-w-3xl md:max-w-4xl h-[330px] sm:h-[430px] flex items-center justify-center mb-4"
+          className="perspective-stage relative w-full max-w-xl sm:max-w-3xl md:max-w-4xl h-[340px] sm:h-[450px] flex items-center justify-center mb-4"
         >
           {displayItems.map((item, idx) => {
             // Check if name and category are translated (fallback if loading from DB as raw string)
@@ -189,7 +189,7 @@ export default function InteractiveMenu() {
                 key={item.id ?? idx}
                 ref={(el) => { cardsRef.current[idx] = el; }}
                 onClick={() => handleCardClick(idx)}
-                className="absolute w-[170px] h-[255px] sm:w-[250px] sm:h-[350px] cursor-pointer preserve-3d bg-brand-cream border border-brand-charcoal/10 rounded-[24px] sm:rounded-[32px] p-3 sm:p-4 flex flex-col justify-between shadow-lg select-none hover:shadow-xl transition-shadow"
+                className="absolute left-[calc(50%-100px)] top-[calc(50%-145px)] sm:left-[calc(50%-135px)] sm:top-[calc(50%-185px)] w-[200px] h-[290px] sm:w-[270px] sm:h-[370px] cursor-pointer preserve-3d bg-brand-cream border border-brand-charcoal/10 rounded-[24px] sm:rounded-[32px] p-3.5 sm:p-4.5 flex flex-col justify-between shadow-lg select-none hover:shadow-xl transition-shadow"
               >
                 {/* Category + Price Badge header line */}
                 <div className="flex justify-between items-center border-b border-brand-charcoal/5 pb-1.5 sm:pb-2">
@@ -202,7 +202,7 @@ export default function InteractiveMenu() {
                 </div>
 
                 {/* Product Image representation - Enriched size for best responsiveness */}
-                <div className="w-full h-28 sm:h-44 rounded-xl sm:rounded-2xl overflow-hidden border border-brand-charcoal/5 shadow-inner my-1.5 sm:my-2">
+                <div className="w-full h-36 sm:h-[190px] rounded-xl sm:rounded-2xl overflow-hidden border border-brand-charcoal/5 shadow-inner my-1.5 sm:my-2">
                   <img
                     src={item.image}
                     alt={itemName}

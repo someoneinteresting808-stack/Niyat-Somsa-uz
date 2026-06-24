@@ -9,6 +9,11 @@ import { Flip } from 'gsap/Flip';
 
 gsap.registerPlugin(ScrollTrigger, Flip);
 
+// Prevent ScrollTrigger from refreshing/bouncing on mobile viewports due to browser address bar resize
+ScrollTrigger.config({
+  ignoreMobileResize: true
+});
+
 export default function SecretsExplorer() {
   const { language } = useLanguage();
   const lang = (language === 'uz' || language === 'ru' || language === 'en') ? language : 'uz';
@@ -148,18 +153,18 @@ export default function SecretsExplorer() {
 
         @media (max-width: 768px) {
           .gallery-wrap {
-            height: 78vh;
+            height: 100vh;
           }
 
           .gallery--bento {
             grid-template-columns: repeat(3, 31vw);
-            grid-template-rows: repeat(4, 15vh);
+            grid-template-rows: repeat(4, 18vh);
             gap: 0.8vh;
           }
 
           .gallery--final.gallery--bento {
             grid-template-columns: repeat(3, 100vw);
-            grid-template-rows: repeat(4, 24.5vh);
+            grid-template-rows: repeat(4, 24.8vh);
             gap: 0.8vh;
           }
         }

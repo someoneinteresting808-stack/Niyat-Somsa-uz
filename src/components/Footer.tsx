@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
             <Link to="/" className="flex items-center space-x-3 mb-6 group">
               <img src="/logo.png" alt="Niyat Somsa Logo" className="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
             </Link>
-            <p className="text-sm text-gray-400 leading-relaxed max-w-xs">
+            <p className="text-sm text-gray-500 leading-relaxed max-w-xs">
               {t.about.content.substring(0, 100)}...
             </p>
           </div>
@@ -31,7 +31,7 @@ const Footer: React.FC = () => {
                 { to: '/contact', label: t.nav.contact },
               ].map(({ to, label }) => (
                 <li key={to}>
-                  <Link to={to} className="text-sm text-gray-400 hover:text-[#c8a96e] transition-colors duration-300">
+                  <Link to={to} className="text-sm text-gray-500 hover:text-[#c8a96e] transition-colors duration-300">
                     {label}
                   </Link>
                 </li>
@@ -43,15 +43,15 @@ const Footer: React.FC = () => {
           <div>
             <h4 className="text-[10px] font-bold text-gray-300 uppercase tracking-[0.2em] mb-5">{t.nav.contact}</h4>
             <ul className="space-y-3">
-              <li className="flex items-start space-x-2.5 text-sm text-gray-400">
+              <li className="flex items-start space-x-2.5 text-sm text-gray-500">
                 <MapPin size={15} className="text-[#c8a96e] flex-shrink-0 mt-0.5" />
                 <span className="leading-relaxed">{t.location.address}</span>
               </li>
-              <li className="flex items-center space-x-2.5 text-sm text-gray-400">
+              <li className="flex items-center space-x-2.5 text-sm text-gray-500">
                 <Phone size={15} className="text-[#c8a96e] flex-shrink-0" />
                 <span>+998 90 123 45 67</span>
               </li>
-              <li className="flex items-center space-x-2.5 text-sm text-gray-400">
+              <li className="flex items-center space-x-2.5 text-sm text-gray-500">
                 <Clock size={15} className="text-[#c8a96e] flex-shrink-0" />
                 <span>08:00 – 20:00 ({t.footer.everyday})</span>
               </li>
@@ -63,11 +63,11 @@ const Footer: React.FC = () => {
             <h4 className="text-[10px] font-bold text-gray-300 uppercase tracking-[0.2em] mb-5">{t.footer.socials}</h4>
             <div className="flex space-x-3">
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
-                className="w-9 h-9 rounded-xl border border-gray-100 flex items-center justify-center text-gray-400 hover:border-[#c8a96e] hover:text-[#c8a96e] transition-all duration-300">
+                className="w-9 h-9 rounded-xl border border-gray-100 flex items-center justify-center text-gray-500 hover:border-[#c8a96e] hover:text-[#c8a96e] transition-all duration-300">
                 <Instagram size={16} />
               </a>
               <a href="https://t.me" target="_blank" rel="noopener noreferrer"
-                className="w-9 h-9 rounded-xl border border-gray-100 flex items-center justify-center text-gray-400 hover:border-[#c8a96e] hover:text-[#c8a96e] transition-all duration-300">
+                className="w-9 h-9 rounded-xl border border-gray-100 flex items-center justify-center text-gray-500 hover:border-[#c8a96e] hover:text-[#c8a96e] transition-all duration-300">
                 <Send size={16} />
               </a>
             </div>

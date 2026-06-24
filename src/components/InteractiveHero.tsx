@@ -9,7 +9,12 @@ export default function InteractiveHero() {
   const lang = (language === 'uz' || language === 'ru' || language === 'en') ? language : 'uz';
 
   const [selectedIdx, setSelectedIdx] = useState(0);
+  const [rotation, setRotation] = useState(0);
   const activeProduct = HERO_PRODUCTS[selectedIdx];
+
+  // Touch Swipe Gesture References
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   // Animation References
   const mainImageRef = useRef<HTMLDivElement>(null);
@@ -82,11 +87,40 @@ export default function InteractiveHero() {
   };
 
   const handleNext = () => {
+    setRotation(prev => prev - 60);
     setSelectedIdx((prev) => (prev + 1) % HERO_PRODUCTS.length);
   };
 
   const handlePrev = () => {
+    setRotation(prev => prev + 60);
     setSelectedIdx((prev) => (prev - 1 + HERO_PRODUCTS.length) % HERO_PRODUCTS.length);
+  };
+
+  const selectProduct = (idx: number) => {
+    let diff = idx - selectedIdx;
+    if (diff > 3) diff -= 6;
+    if (diff < -3) diff += 6;
+    setRotation(prev => prev - diff * 60);
+    setSelectedIdx(idx);
+  };
+
+  // Touch handlers for mobile swiping
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+    if (diff > 50) {
+      handleNext();
+    } else if (diff < -50) {
+      handlePrev();
+    }
   };
 
   const textT = {
@@ -98,11 +132,11 @@ export default function InteractiveHero() {
   return (
     <section
       id="hero"
-      className="relative min-h-[75vh] sm:min-h-[85vh] bg-brand-cream overflow-hidden pt-14 sm:pt-20 pb-4 flex flex-col justify-center items-center"
+      className="relative min-h-[75vh] sm:min-h-[85vh] bg-brand-cream overflow-hidden pt-10 sm:pt-20 pb-4 flex flex-col justify-center items-center"
     >
       <style>{`
         .satellite-button {
-          --distance: 100px;
+          --distance: 112px;
         }
         @media (min-width: 640px) {
           .satellite-button {
@@ -145,14 +179,19 @@ export default function InteractiveHero() {
         <div className="relative flex items-center justify-center w-full max-w-2xl py-2 sm:py-6">
           
           {/* Circular dial backing */}
-          <div className="relative w-64 h-64 sm:w-[420px] sm:h-[420px] md:w-[500px] md:h-[500px] flex items-center justify-center">
+          <div 
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="relative w-[300px] h-[300px] sm:w-[420px] sm:h-[420px] md:w-[500px] md:h-[500px] flex items-center justify-center cursor-grab active:cursor-grabbing"
+          >
             
             {/* Outer Rotary Dial containing product avatars */}
             <div 
               ref={discRef}
               className="absolute inset-0 rounded-full border border-dashed border-brand-charcoal/15 bg-brand-cream/30 flex items-center justify-center transition-all duration-1000"
               style={{ 
-                transform: `rotate(${selectedIdx * -60}deg)`
+                transform: `rotate(${rotation}deg)`
               }}
             >
               {/* Compass numbers for 6 spots */}
@@ -180,20 +219,20 @@ export default function InteractiveHero() {
                 return (
                   <button
                     key={prod.id ?? idx}
-                    onClick={() => setSelectedIdx(idx)}
-                    className={`satellite-button absolute w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full border p-1 overflow-hidden transition-all duration-500 shadow-md ${
+                    onClick={() => selectProduct(idx)}
+                    className={`satellite-button absolute w-[72px] h-[72px] sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full border p-1 overflow-hidden transition-all duration-500 shadow-md ${
                       isSelected 
                         ? 'border-brand-sunset ring-4 ring-brand-sunset/20 scale-110 z-20 opacity-100 bg-brand-cream' 
                         : 'border-brand-charcoal/10 scale-90 opacity-55 hover:opacity-100 bg-brand-cream/90'
                     }`}
                     style={{
-                      transform: `rotate(${rotationAngle}deg) translate(var(--distance)) rotate(-${rotationAngle}deg) rotate(${selectedIdx * 60}deg)`
+                      transform: `rotate(${rotationAngle}deg) translate(var(--distance)) rotate(-${rotationAngle}deg) rotate(${-rotation}deg)`
                     }}
                   >
                     <img
                       src={prod.image}
                       alt={prod.name[lang]}
-                      className="w-full h-full object-cover rounded-full"
+                      className="w-full h-full object-cover rounded-full pointer-events-none"
                       referrerPolicy="no-referrer"
                     />
                   </button>
@@ -202,7 +241,7 @@ export default function InteractiveHero() {
             </div>
 
             {/* Central Elevated Product Display Pedestal - 1.5x Larger & Strictly on Top (Covers 1/3 of small plates) */}
-            <div className="absolute z-30 w-60 h-60 sm:w-[320px] sm:h-[320px] md:w-[480px] md:h-[480px] rounded-full bg-radial from-brand-charcoal/[0.04] via-transparent to-transparent flex items-center justify-center pointer-events-none">
+            <div className="absolute z-30 w-[230px] h-[230px] sm:w-[320px] sm:h-[320px] md:w-[480px] md:h-[480px] rounded-full bg-radial from-brand-charcoal/[0.04] via-transparent to-transparent flex items-center justify-center pointer-events-none">
               
               {/* Floating particle/ingredient anchor point */}
               <div ref={particleContainerRef} className="absolute inset-0 pointer-events-none z-30 flex items-center justify-center" />
@@ -210,12 +249,13 @@ export default function InteractiveHero() {
               {/* Selected Product Main Image (No Weight overlay) - 1.5x original size */}
               <div 
                 ref={mainImageRef} 
-                className="w-44 h-44 sm:w-[292px] sm:h-[292px] md:w-[382px] md:h-[382px] rounded-full overflow-hidden shadow-2xl border-[4px] sm:border-[6px] border-brand-cream aspect-square group relative pointer-events-auto"
+                onClick={handleNext}
+                className="w-[210px] h-[210px] sm:w-[292px] sm:h-[292px] md:w-[382px] md:h-[382px] rounded-full overflow-hidden shadow-2xl border-[4px] sm:border-[6px] border-brand-cream aspect-square group relative pointer-events-auto cursor-pointer"
               >
                 <img
                   src={activeProduct.image}
                   alt={activeProduct.name[lang]}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 pointer-events-none"
                   referrerPolicy="no-referrer"
                 />
                 
@@ -231,14 +271,14 @@ export default function InteractiveHero() {
           {/* Platter Left/Right Physical Swipers */}
           <button
             onClick={handlePrev}
-            className="absolute left-0 sm:-left-8 md:-left-16 w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-brand-charcoal/15 bg-brand-cream flex items-center justify-center text-brand-charcoal hover:border-brand-sunset hover:text-brand-sunset hover:bg-brand-charcoal/5 transition-all shadow-sm cursor-pointer z-20 font-bold focus:outline-none"
+            className="absolute left-0 sm:-left-8 md:-left-16 w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-brand-charcoal/15 bg-brand-cream hidden sm:flex items-center justify-center text-brand-charcoal hover:border-brand-sunset hover:text-brand-sunset hover:bg-brand-charcoal/5 transition-all shadow-sm cursor-pointer z-20 font-bold focus:outline-none"
             aria-label="Previous Hearth Product"
           >
             ←
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-0 sm:-right-8 md:-right-16 w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-brand-charcoal/15 bg-brand-cream flex items-center justify-center text-brand-charcoal hover:border-brand-sunset hover:text-brand-sunset hover:bg-brand-charcoal/5 transition-all shadow-sm cursor-pointer z-20 font-bold focus:outline-none"
+            className="absolute right-0 sm:-right-8 md:-right-16 w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-brand-charcoal/15 bg-brand-cream hidden sm:flex items-center justify-center text-brand-charcoal hover:border-brand-sunset hover:text-brand-sunset hover:bg-brand-charcoal/5 transition-all shadow-sm cursor-pointer z-20 font-bold focus:outline-none"
             aria-label="Next Hearth Product"
           >
             →
@@ -249,7 +289,7 @@ export default function InteractiveHero() {
         {/* Compact, clean text presentation section instead of diagnostic bars */}
         <div 
           ref={textContentRef}
-          className="mt-4 md:mt-10 bg-brand-cream border border-brand-charcoal/10 rounded-2xl py-4 px-4 sm:py-5 sm:px-6 text-center max-w-xl w-full"
+          className="mt-2 sm:mt-10 bg-brand-cream border border-brand-charcoal/10 rounded-2xl py-3 px-4 sm:py-5 sm:px-6 text-center max-w-xl w-full"
         >
           <h1 className="hero-anim-item font-sans text-xl sm:text-2xl md:text-3xl font-black text-brand-charcoal uppercase tracking-tighter mb-2 leading-tight">
             {activeProduct.name[lang]}
